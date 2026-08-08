@@ -71,7 +71,7 @@ pg = st.navigation({
         Attendance_page,
         faculty_page,
         About_school_page,
-        fee_page
+        fee_page,dashboard_page
     ]
 })
 
