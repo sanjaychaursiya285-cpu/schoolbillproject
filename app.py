@@ -47,31 +47,82 @@ if st.sidebar.button("Logout", type="secondary"):
     logout()
 
 # Define Navigation Pages
-dashboard_page = st.Page("pages/dashboard.py", title="dashboard", icon="📊", default=True)
-students_page  = st.Page("pages/students.py", title="Students", icon="🎓")
-teachers_page  = st.Page("pages/teachers.py", title="Teachers", icon="👨‍🏫")
-fee_page   = st.Page("pages/fee.py", title="Finance & Fees", icon="💳")
-About_school_page = st.Page("pages/about_school.py", title="About_school", icon="📊")
-faculty_page   = st.Page("pages/faculty.py", title="Faculty", icon="💳")
-Attendance_page   = st.Page("pages/Attendance.py", title="Attendance", icon="💳")
-Marks_page   = st.Page("pages/Marks.py", title="Marks", icon="💳")
-Payroll_page   = st.Page("pages/payroll.py", title="Payroll", icon="💳")
-financial_page   = st.Page("pages/financial.py", title="Financial", icon="💳")
+dashboard_page = st.Page(
+    "pages/dashboard.py",
+    title="dashboard",
+    icon="📊",
+    default=True
+)
 
+students_page = st.Page(
+    "pages/students.py",
+    title="Students",
+    icon="🎓"
+)
 
-# Setup Navigation with groups
+teachers_page = st.Page(
+    "pages/teachers.py",
+    title="Teachers",
+    icon="👨‍🏫"
+)
+
+fee_page = st.Page(
+    "pages/fee.py",
+    title="Finance & Fees",
+    icon="💳"
+)
+
+about_school_page = st.Page(
+    "pages/about_school.py",
+    title="About School",
+    icon="🏫"
+)
+
+faculty_page = st.Page(
+    "pages/faculty.py",
+    title="Faculty",
+    icon="👨‍🏫"
+)
+
+attendance_page = st.Page(
+    "pages/attendance.py",
+    title="Attendance",
+    icon="📅"
+)
+
+marks_page = st.Page(
+    "pages/marks.py",
+    title="Marks",
+    icon="📝"
+)
+
+payroll_page = st.Page(
+    "pages/payroll.py",
+    title="Payroll",
+    icon="💰"
+)
+
+financial_page = st.Page(
+    "pages/financial.py",
+    title="Financial",
+    icon="📈"
+)
+
 pg = st.navigation({
-    "Main": [dashboard_page],
+    "Main": [
+        dashboard_page
+    ],
+
     "Management": [
         students_page,
         teachers_page,
         financial_page,
-        Payroll_page,
-        Marks_page,
-        Attendance_page,
+        payroll_page,
+        marks_page,
+        attendance_page,
         faculty_page,
-        About_school_page,
-        fee_page,dashboard_page
+        about_school_page,
+        fee_page
     ]
 })
 
