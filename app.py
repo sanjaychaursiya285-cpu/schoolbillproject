@@ -1,15 +1,13 @@
 import streamlit as st
-from database import supabase
 
+# Page configuration
 st.set_page_config(
-    page_title="Shree Janta Secondary School", 
-    page_icon="🏫", 
+    page_title="Shree Janta Secondary School",
+    page_icon="🏫",
     layout="wide"
 )
 
-# -------------------------------------------------------------------
-# 🔒 AUTHENTICATION / LOGIN SYSTEM
-# -------------------------------------------------------------------
+# Initialize login session state
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
@@ -17,98 +15,64 @@ def logout():
     st.session_state.logged_in = False
     st.rerun()
 
+# -------------------------------------------------------------------
+# 🔒 LOGIN SCREEN
+# -------------------------------------------------------------------
 if not st.session_state.logged_in:
     st.title("🔐 Shree Janta Secondary School - Login")
-    
-    # Login Form
+
     with st.form("login_form"):
         username = st.text_input("Username / Email")
         password = st.text_input("Password", type="password")
-        submit = st.form_submit_button("Login")
-        
+        submit = st.form_submit_button("Login", type="primary")
+
         if submit:
-            # OPTION A: Hardcoded simple login (Testing / Single Admin ke liye)
             if username == "admin" and password == "admin123":
                 st.session_state.logged_in = True
+                st.session_state.username = username
                 st.success("Login successful!")
                 st.rerun()
             else:
                 st.error("Invalid Username or Password!")
-                
-            # OPTION B: Agar Supabase Auth use kar rahe hain, toh uper wala IF hata kar ye uncomment karein:
-            # try:
-            #     res = supabase.auth.sign_in_with_password({"email": username, "password": password})
-            #     st.session_state.logged_in = True
-            #     st.rerun()
-            # except Exception as e:
-            #     st.error("Invalid credentials!")
 
-    # Login nahi hua hai toh code yahin ruk jayega
-    st.stop()
+    st.stop()  # Stop execution so pages are hidden when not logged in
 
 # -------------------------------------------------------------------
-# 📊 DASHBOARD (Ye tabhi chalega jab user Login ho jayega)
+# 🗺️ MULTI-PAGE NAVIGATION (Renders only when logged_in = True)
 # -------------------------------------------------------------------
 
-# Sidebar par Logout button
-st.sidebar.write(f"Logged in successfully!")
-if st.sidebar.button("Logout"):
+# Logout button in sidebar
+st.sidebar.caption(f"Logged in as: **{st.session_state.get('username', 'Admin')}**")
+if st.sidebar.button("Logout", type="secondary"):
     logout()
 
-st.title("📊 Shree Janta Secondary School - Executive Dashboard")
-st.markdown("### Real-Time School Analytics & Metrics")
+# Define Navigation Pages
+dashboard_page = st.Page("pages/dashboard.py", title="Dashboard", icon="📊", default=True)
+students_page  = st.Page("pages/students.py", title="Students", icon="🎓")
+teachers_page  = st.Page("pages/teachers.py", title="Teachers", icon="👨‍🏫")
+fee_page   = st.Page("pages/fee.py", title="Finance & Fees", icon="💳")
+About_school_page = st.Page("pages/about_school.py", title="About_school", icon="📊")
+faculty_page   = st.Page("pages/faculty.py", title="Faculty", icon="💳")
+Attendance_page   = st.Page("pages/Attendance.py", title="Attendance", icon="💳")
+Marks_page   = st.Page("pages/Marks.py", title="Marks", icon="💳")
+Payroll_page   = st.Page("pages/payroll.py", title="Payroll", icon="💳")
+financial_page   = st.Page("pages/financial.py", title="Financial", icon="💳")
 
-# Data fetching logic
-try:
-    students_res = supabase.table("students").select("id", count="exact").execute()
-    total_students = students_res.count if students_res.count is not None else len(students_res.data)
-except Exception:
-    total_students = 0
 
-try:
-    teachers_res = supabase.table("teachers").select("id", count="exact").execute()
-    total_teachers = teachers_res.count if teachers_res.count is not None else len(teachers_res.data)
-except Exception:
-    total_teachers = 0
+# Setup Navigation with groups
+pg = st.navigation({
+    "Main": [dashboard_page],
+    "Management": [
+        students_page,
+        teachers_page,
+        financial_page,
+        Payroll_page,
+        Marks_page,
+        Attendance_page,
+        faculty_page,
+        About_school_page,
+        fee_page
+    ]
+})
 
-try:
-    fees_res = supabase.table("fees").select("paid_amount").execute()
-    total_fee_collected = sum([row.get("paid_amount", 0) for row in fees_res.data]) if fees_res.data else 0.0
-except Exception:
-    total_fee_collected = 0.0
-
-try:
-    fin_res = supabase.table("financial").select("amount").execute()
-    total_expenses = sum([row.get("amount", 0) for row in fin_res.data]) if fin_res.data else 0.0
-except Exception:
-    total_expenses = 0.0
-
-# Metrics Display
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    st.metric(label="Total Students", value=total_students)
-with col2:
-    st.metric(label="Total Teachers", value=total_teachers)
-with col3:
-    st.metric(label="Fee Revenue", value=f"Rs. {total_fee_collected:,.2f}")
-with col4:
-    st.metric(label="Total Expenses", value=f"Rs. {total_expenses:,.2f}")
-
-st.markdown("---")
-col_a, col_b = st.columns(2)
-
-with col_a:
-    st.subheader("Recent Fee Transactions")
-    recent_fees = supabase.table("fees").select("student_name, fee_type, paid_amount, payment_date").order("id", desc=True).limit(5).execute()
-    if recent_fees.data:
-        st.dataframe(recent_fees.data, use_container_width=True)
-    else:
-        st.info("No fee data available.")
-
-with col_b:
-    st.subheader("Recent Student Registrations")
-    recent_students = supabase.table("students").select("full_name, grade, phone, enrollment_date").order("id", desc=True).limit(5).execute()
-    if recent_students.data:
-        st.dataframe(recent_students.data, use_container_width=True)
-    else:
-        st.info("No student records found.")
+pg.run()
