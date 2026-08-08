@@ -47,7 +47,7 @@ if st.sidebar.button("Logout", type="secondary"):
     logout()
 
 # Define Navigation Pages
-dashboard_page = st.Page("pages/dashboard.py", title="Dashboard", icon="📊", default=True)
+dashboard_page = st.Page("pages/dashboard.py", title="dashboard", icon="📊", default=True)
 students_page  = st.Page("pages/students.py", title="Students", icon="🎓")
 teachers_page  = st.Page("pages/teachers.py", title="Teachers", icon="👨‍🏫")
 fee_page   = st.Page("pages/fee.py", title="Finance & Fees", icon="💳")
